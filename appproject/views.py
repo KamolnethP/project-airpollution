@@ -64,7 +64,7 @@ class LoginUserView(APIView):
             'userId': user.userId,
             'exp': datetime.datetime.utcnow() + datetime.timedelta(minutes=1440),
             'iat': datetime.datetime.utcnow(),
-            'isAdmin': 'False'
+            'isAgency': user.isAgency
         }
 
         token = jwt.encode(payload, 'secret', algorithm='HS256')
