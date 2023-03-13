@@ -105,10 +105,19 @@ class UploadFileView(viewsets.ModelViewSet):
             dataName=request.POST['dataName'],
             description=request.POST['description']
             )
-
+        global file_Res 
         for file in files:
             File.objects.create( dataUpload=dataUpload ,file=file, fileName=request.POST['fileName'])
-        return Response(data= {"statusCode" : 0},status=status.HTTP_201_CREATED)
+            file_Res = file
+        file = pd.read_excel(file_Res)
+        return Response(data={"statusCode": 0, "data": file.columns.ravel()}, status=status.HTTP_200_OK)
+
+
+class ReadFileView(APIView):
+    def post(self, request):
+        fileName = request.data['fileName']
+        file = pd.read_excel("./media/"+fileName)
+        return Response(data={"statusCode": 0, "data": file.columns.ravel()}, status=status.HTTP_200_OK)
 
 
 
@@ -118,15 +127,6 @@ class UploadNewFileView(APIView):
         files = request.FILES.getlist('files', None)
         File.objects.create( file=files, fileName=request.data['fileName'])
         return Response(data={"statusCode":0},status=status.HTTP_201_CREATED)
-
-
-
-class ReadFileView(APIView):
-    def post(self, request):
-        fileName = request.data['fileName']
-        file = pd.read_excel("./media/"+fileName)
-        print(file.columns.ravel())
-        return Response(data={"statusCode": 0, "data": file.columns.ravel()}, status=status.HTTP_200_OK)
 
 
 
