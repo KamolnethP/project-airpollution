@@ -4,14 +4,14 @@ from rest_framework.response import Response
 from rest_framework.exceptions import AuthenticationFailed
 from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework import status,viewsets
-from .models import User,File,DataUpload,Province,DataSetGroup, FieldName
+from .models import User,File,DataUpload,Province,DataSetGroup,FieldName,Metadata
 from django.shortcuts import render
 import jwt, datetime,csv, codecs
 from django.views.decorators.csrf import csrf_exempt
 import json
 from wsgiref.util import FileWrapper
 import pandas as pd
-from .serializers import AppProjectSerializer,FileSerializer,ProvinceSerializer,DataSetGroupSerializer
+from .serializers import AppProjectSerializer,FileSerializer,ProvinceSerializer,DataSetGroupSerializer,MetadataSerializer
 
 
 def checktoken(token):
@@ -183,6 +183,10 @@ def dropdownList(request):
     if request.method == "GET":
         province = Province.objects.all()
         dataSetGroup = DataSetGroup.objects.all()
+        metadata = Metadata.objects.all()
         listprovicne = list(province.values())
         listdataSetGroup = list(dataSetGroup.values())
-        return JsonResponse({"statusCode":0,"province":listprovicne, "dataSetGroup":listdataSetGroup},safe=False)
+        listmetadata = list(metadata.values())
+        return JsonResponse({"statusCode":0,"province":listprovicne, "dataSetGroup":listdataSetGroup, "metadata":listmetadata},safe=False)
+
+
