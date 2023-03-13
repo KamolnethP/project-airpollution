@@ -1,7 +1,7 @@
 from dataclasses import field, fields
 from pyexpat import model
 from rest_framework import serializers
-from .models import User,File,DataUpload,Province,DataSetGroup
+from .models import User,File,DataUpload,Province,DataSetGroup,Metadata
 from django.utils import encoding
 
 class AppProjectSerializer(serializers.ModelSerializer):
@@ -55,4 +55,10 @@ class ProvinceSerializer(serializers.ModelSerializer):
 class DataSetGroupSerializer(serializers.ModelSerializer):
     class Meta:
         model = DataSetGroup 
+        fields = "__all__"
+
+
+class MetadataSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Metadata 
         fields = "__all__"
