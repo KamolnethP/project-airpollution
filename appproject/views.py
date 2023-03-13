@@ -11,7 +11,7 @@ from django.views.decorators.csrf import csrf_exempt
 import json
 from wsgiref.util import FileWrapper
 import pandas as pd
-from .serializers import AppProjectSerializer,FileSerializer,ProvinceSerializer,DataSetGroupSerializer,MetadataSerializer
+from .serializers import AppProjectSerializer,FileSerializer,ProvinceSerializer,DataSetGroupSerializer,MetadataSerializer,DataUploadSerializer
 
 
 def checktoken(token):
@@ -110,7 +110,7 @@ class UploadFileView(viewsets.ModelViewSet):
             File.objects.create( dataUpload=dataUpload ,file=file, fileName=request.POST['fileName'])
             file_Res = file
         file = pd.read_excel(file_Res)
-        return Response(data={"statusCode": 0, "data": file.columns.ravel()}, status=status.HTTP_200_OK)
+        return Response(data={"statusCode": 0, "data": file.columns.ravel(),"dataId":dataUpload.dataId}, status=status.HTTP_200_OK)
 
 
 class ReadFileView(APIView):
