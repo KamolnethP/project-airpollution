@@ -11,7 +11,7 @@ from django.views.decorators.csrf import csrf_exempt
 import json
 from wsgiref.util import FileWrapper
 import pandas as pd
-from .serializers import AppProjectSerializer,FileSerializer
+from .serializers import AppProjectSerializer,FileSerializer,ProvinceSerializer,DataSetGroupSerializer
 
 
 def checktoken(token):
@@ -178,3 +178,11 @@ def downloadFile(request):
         response['Content-Disposition'] = 'attachment; filename="%s"'%filePath
         return response
         
+
+def dropdownList(request):
+    if request.method == "GET":
+        province = Province.objects.all()
+        dataSetGroup = DataSetGroup.objects.all()
+        listprovicne = list(province.values())
+        listdataSetGroup = list(dataSetGroup.values())
+        return JsonResponse({"statusCode":0,"province":listprovicne, "dataSetGroup":listdataSetGroup},safe=False)

@@ -7,7 +7,8 @@ from .views import (RegisterUserView,
                     ReadFileView,
                     MapMetaDataView,
                     SearchDataView,
-                    downloadFile)
+                    downloadFile,
+                    dropdownList)
 
 urlpatterns =[path('registerUserView', RegisterUserView.as_view()),
               path('loginUserView', LoginUserView.as_view()),
@@ -17,5 +18,6 @@ urlpatterns =[path('registerUserView', RegisterUserView.as_view()),
               path('readFileView', ReadFileView.as_view()),
               path('mapMetaDataView', MapMetaDataView.as_view()),
               path('searchDataView', SearchDataView.as_view()),
-              path('downloadFile',downloadFile)
+              path('downloadFile',downloadFile),
+              path('dropdownList',dropdownList)
               ]
