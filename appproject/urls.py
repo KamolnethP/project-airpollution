@@ -22,7 +22,5 @@ urlpatterns =[path('registerUserView', RegisterUserView.as_view()),
               path('mapMetaDataView', MapMetaDataView.as_view()),
               path('searchDataView', SearchDataView.as_view()),
               path('downloadFile',downloadFile),
-              path('dropdownList',dropdownList),
-              path('', index),
-              path('log', display_log)
+              path('dropdownList',dropdownList)
               ]
