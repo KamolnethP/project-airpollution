@@ -8,9 +8,7 @@ from .views import (RegisterUserView,
                     MapMetaDataView,
                     SearchDataView,
                     downloadFile,
-                    dropdownList,
-                    index,
-                    display_log
+                    dropdownList
                     )
 
 urlpatterns =[path('registerUserView', RegisterUserView.as_view()),
