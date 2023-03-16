@@ -146,24 +146,35 @@ class MapMetaDataView(APIView):
 class SearchDataView(APIView):
     def post(self, request):
         resultData = DataUpload.objects.none()
-        dataSetGroupId = request.data['dataSetGroupId']
-        if dataSetGroupId:
-            resultData = DataUpload.objects.filter(dataSetgroupId=dataSetGroupId).values()
+        dataSetGroup = request.data['dataSetGroup']
+        if dataSetGroup:
+            dataSetGroupitem = DataSetGroup.objects.filter(dataSetGroupName=dataSetGroup).first()
+            resultData = DataUpload.objects.filter(dataSetgroupId=dataSetGroupitem.dataSetGroupId).values()
+
         keySearch = request.data['keySearch']
         if keySearch and resultData:
             resultData = resultData.filter(description__contains=keySearch).values()
-        elif keySearch and not dataSetGroupId:
+        elif keySearch and not dataSetGroup:
             resultData = DataUpload.objects.filter(description__contains=keySearch).values()
+            
         metaDataField = request.data['metaDataField']
         if metaDataField and resultData:
-            dataIds = FieldName.objects.filter(metaDataName__in=metaDataField).values()
-            resultData = resultData.filter().values()
-        elif metaDataField and not dataSetGroupId and not keySearch:
-            dataIds = FieldName.objects.filter(metaDataName__in=metaDataField).values()
-            resultData = DataUpload.objects.filter(pk__in=dataIds).values()
+            dataIds = FieldName.objects.filter(metaDataName__in=metaDataField).values('dataId')
+            resultData = resultData.filter(dataId__in=dataIds).values()
+        elif metaDataField and not dataSetGroup and not keySearch:
+            dataIds = FieldName.objects.filter(metaDataName__in=metaDataField).values('dataId')
+            resultData = DataUpload.objects.filter(dataId__in=dataIds).values()
+
+        dataSetGroupIds = DataSetGroup.objects.all().values()
+        dataSetGroupResponse = list()
+        for id in dataSetGroupIds:
+            
+            resultdataSetgroup = resultData.filter(dataSetgroupId=id['dataSetGroupId']).values()
+            if resultdataSetgroup:
+                dataSetGroupResponse.append({"dataSetGroupId": id['dataSetGroupId'],"dataSetGroupName": id['dataSetGroupName'],"countdata":len(list(resultdataSetgroup)) , "data": list(resultdataSetgroup)})
+
         print(resultData)
-        listResultData = list(resultData)
-        return Response(data={"statusCode": 0, "data": listResultData}, status=status.HTTP_200_OK)
+        return Response(data={"statusCode": 0, "data": dataSetGroupResponse}, status=status.HTTP_200_OK)
 
 
 @csrf_exempt
