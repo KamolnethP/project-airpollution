@@ -26,7 +26,6 @@ class DataUpload(models.Model):
     dataId = models.AutoField(primary_key=True)
     dataName = models.CharField(max_length=255)
     description = models.CharField(max_length=255)
-    metaDataId = models.IntegerField(null=True)
     dataSetgroupId = models.IntegerField()
     provinceId = models.IntegerField()
     fileName = models.CharField(max_length=255)

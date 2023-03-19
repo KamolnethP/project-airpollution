@@ -168,7 +168,6 @@ class SearchDataView(APIView):
         dataSetGroupIds = DataSetGroup.objects.all().values()
         dataSetGroupResponse = list()
         for id in dataSetGroupIds:
-            
             resultdataSetgroup = resultData.filter(dataSetgroupId=id['dataSetGroupId']).values()
             if resultdataSetgroup:
                 dataSetGroupResponse.append({"dataSetGroupId": id['dataSetGroupId'],"dataSetGroupName": id['dataSetGroupName'],"countdata":len(list(resultdataSetgroup)) , "data": list(resultdataSetgroup)})
