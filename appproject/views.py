@@ -64,7 +64,10 @@ class LoginUserView(APIView):
             'userId': user.userId,
             'exp': datetime.datetime.utcnow() + datetime.timedelta(minutes=1440),
             'iat': datetime.datetime.utcnow(),
-            'isAgency': user.isAgency
+            'isAgency': user.isAgency,
+            'email': user.email,
+            'agencyName': user.agencyName,
+            'userNameAgency': user.userNameAgency
         }
 
         token = jwt.encode(payload, 'secret', algorithm='HS256')
@@ -170,11 +173,11 @@ class SearchDataView(APIView):
             if resultdataSetgroup:
                 for data in resultdataSetgroup:
                     resultMapField = FieldName.objects.filter(dataId=data['dataId']).values()
+                    listMapField = list()
                     if resultMapField:
-                        listMapField = list()
                         for result in resultMapField:
                             listMapField.append({"fieldName": result['fieldName'], "metaDataName": result['metaDataName']})
-                        data['mapFieldList'] = listMapField
+                    data['mapFieldList'] = listMapField
                 dataSetGroupResponse.append({"dataSetGroupId": id['dataSetGroupId'],"dataSetGroupName": id['dataSetGroupName'],"countdata":len(list(resultdataSetgroup)) , "data": list(resultdataSetgroup)})
 
 
