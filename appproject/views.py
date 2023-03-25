@@ -95,22 +95,20 @@ class UploadFileView(viewsets.ModelViewSet):
     queryset = DataUpload.objects.all()
     serializer_class = FileSerializer
     def create(self, request):
-        files = request.FILES.getlist('files', None)
-        province = Province.objects.filter(name_th=request.POST['provinceId']).first()
+        file = request.FILES['file']
         dataSet = DataSetGroup.objects.filter(dataSetGroupName=request.POST['dataSetGroupId']).first()
         dataUpload = DataUpload.objects.create(
             dataSetgroupId=dataSet.dataSetGroupId,
-            fileName=request.POST['fileName'],
-            provinceId=province.provinceid,
+            fileName=file.name,
+            provinceName=request.POST['provinceName'],
             dataName=request.POST['dataName'],
             description=request.POST['description']
             )
-        global file_Res 
-        for file in files:
-            File.objects.create( dataUpload=dataUpload ,file=file, fileName=request.POST['fileName'])
-            file_Res = file
-        file = pd.read_excel(file_Res)
-        return Response(data={"statusCode": 0, "data": file.columns.ravel(),"dataId":dataUpload.dataId}, status=status.HTTP_200_OK)
+        # global file_Res 
+        File.objects.create( dataUpload=dataUpload ,file=file, fileName=file.name)
+        # file_Res = file
+        fileContent = pd.read_excel(file)
+        return Response(data={"statusCode": 0, "data": fileContent.columns.ravel(),"dataId":dataUpload.dataId}, status=status.HTTP_200_OK)
 
 
 class ReadFileView(APIView):
@@ -170,7 +168,15 @@ class SearchDataView(APIView):
         for id in dataSetGroupIds:
             resultdataSetgroup = resultData.filter(dataSetgroupId=id['dataSetGroupId']).values()
             if resultdataSetgroup:
+                for data in resultdataSetgroup:
+                    resultMapField = FieldName.objects.filter(dataId=data['dataId']).values()
+                    if resultMapField:
+                        listMapField = list()
+                        for result in resultMapField:
+                            listMapField.append({"fieldName": result['fieldName'], "metaDataName": result['metaDataName']})
+                        data['mapFieldList'] = listMapField
                 dataSetGroupResponse.append({"dataSetGroupId": id['dataSetGroupId'],"dataSetGroupName": id['dataSetGroupName'],"countdata":len(list(resultdataSetgroup)) , "data": list(resultdataSetgroup)})
+
 
         print(resultData)
         return Response(data={"statusCode": 0, "data": dataSetGroupResponse}, status=status.HTTP_200_OK)
@@ -181,7 +187,8 @@ def downloadFile(request):
     if request.method == "POST":
         mydata = json.loads(request.body)
         filePath = mydata['filePath']
-        path = "./media/" + filePath
+        fileResult = File.objects.filter(fileName=filePath).first()
+        path = "./media/" + fileResult.file.name
         print(path)
         FilePointer = open(path, "rb")
         response = HttpResponse(FileWrapper(FilePointer), content_type = 'whatever')
