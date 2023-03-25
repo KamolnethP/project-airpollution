@@ -27,7 +27,7 @@ class DataUpload(models.Model):
     dataName = models.CharField(max_length=255)
     description = models.CharField(max_length=255)
     dataSetgroupId = models.IntegerField()
-    provinceId = models.IntegerField()
+    provinceName = models.CharField(max_length=150)
     fileName = models.CharField(max_length=255)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now_add=True)
@@ -37,10 +37,9 @@ class DataUpload(models.Model):
 
 
 class File(models.Model):
-    dataUpload = models.ForeignKey(DataUpload, related_name="file", on_delete=models.CASCADE)
-    file = models.FileField(blank=False, null=False)
+    dataUpload = models.ForeignKey(DataUpload, related_name="file", on_delete=models.CASCADE) 
     fileName = models.CharField(null=True, max_length=255)
-
+    file = models.FileField(blank=False, null=False)
     def __str__(self):
         return self.__all__
 
