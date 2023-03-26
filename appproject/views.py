@@ -11,6 +11,7 @@ from django.views.decorators.csrf import csrf_exempt
 import json
 from wsgiref.util import FileWrapper
 import pandas as pd
+from django.db.models import Q
 from .serializers import AppProjectSerializer,FileSerializer,ProvinceSerializer,DataSetGroupSerializer,MetadataSerializer,DataUploadSerializer
 
 
@@ -154,9 +155,9 @@ class SearchDataView(APIView):
 
         keySearch = request.data['keySearch']
         if keySearch and resultData:
-            resultData = resultData.filter(description__contains=keySearch).values()
+            resultData = resultData.filter(Q(description__contains=keySearch) | Q(dataName__contains=keySearch) | Q(fileName__contains=keySearch)).values()
         elif keySearch and not dataSetGroup:
-            resultData = DataUpload.objects.filter(description__contains=keySearch).values()
+            resultData = DataUpload.objects.filter(Q(description__contains=keySearch) | Q(dataName__contains=keySearch) | Q(fileName__contains=keySearch)).values()
             
         metaDataField = request.data['metaDataField']
         if metaDataField and resultData:
