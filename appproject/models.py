@@ -80,9 +80,10 @@ class Province(models.Model):
 
 
 class Download(models.Model):
-    userRequestId = models.IntegerField()
-    dataId = models.ForeignKey(DataUpload, related_name="downloads", on_delete=models.CASCADE)
-    datetime = models.DateTimeField(auto_now_add=True)
-    
+    fileName = models.CharField(max_length=255, null=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    countView = models.IntegerField()
+
     def __str__(self):
         return self.__all__
