@@ -4,7 +4,7 @@ from rest_framework.response import Response
 from rest_framework.exceptions import AuthenticationFailed
 from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework import status,viewsets
-from .models import User,File,DataUpload,Province,DataSetGroup,FieldName,Metadata
+from .models import User,File,DataUpload,Province,DataSetGroup,FieldName,Metadata,Download
 from django.shortcuts import render
 import jwt, datetime,csv, codecs
 from django.views.decorators.csrf import csrf_exempt
@@ -193,6 +193,15 @@ def downloadFile(request):
         filePath = mydata['filePath']
         fileResult = File.objects.filter(fileName=filePath).first()
         path = "./media/" + fileResult.file.name
+        dowloadHistory = Download.objects.filter(fileName=filePath).first()
+        if not dowloadHistory:
+            dowloadHistoryCreate = Download.objects.create(
+                fileName=filePath,
+                countView=1
+            )
+        else:
+            dowloadHistory.countView += 1
+            dowloadHistory.save()
         print(path)
         FilePointer = open(path, "rb")
         response = HttpResponse(FileWrapper(FilePointer), content_type = 'whatever')
