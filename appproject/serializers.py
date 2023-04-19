@@ -7,7 +7,7 @@ from django.utils import encoding
 class AppProjectSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ['email', 'password', 'agencyName', 'username', 'userNameAgency', 'firstnameUserRequest', 'lastnameUserRequest', 'agencyNameRequest', 'isAgency']
+        fields = ['email', 'password', 'agencyName', 'username', 'userNameAgency', 'isAgency']
         extra_kwargs = {
             'password': {'write_only': True}
         }
@@ -43,27 +43,3 @@ class FileSerializer(serializers.Serializer):
         model = File
         fields = '__all__'
 
-
-
-class ProvinceSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Province
-        fields = ['code','name_th','name_en']
-
-
-
-class DataSetGroupSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = DataSetGroup 
-        fields = "__all__"
-
-
-class MetadataSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Metadata 
-        fields = "__all__"
-
-class DataUploadSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = DataUpload
-        fields = ['dataId']

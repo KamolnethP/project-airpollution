@@ -12,21 +12,8 @@ import json
 from wsgiref.util import FileWrapper
 import pandas as pd
 from django.db.models import Q
-from .serializers import AppProjectSerializer,FileSerializer,ProvinceSerializer,DataSetGroupSerializer,MetadataSerializer,DataUploadSerializer
-
-
-def checktoken(token):
-
-    if not token:
-        raise AuthenticationFailed('Unauthenticated!')
-
-    try:
-
-        payload = jwt.decode(token, 'secret', algorithms=['HS256'])
-
-    except jwt.ExpiredSignatureError:        
-        raise AuthenticationFailed('Unauthenticated!')
-    return payload
+from django.db import IntegrityError
+from .serializers import AppProjectSerializer,FileSerializer
 
 
 # Create your views here.
@@ -97,38 +84,24 @@ class LogoutView(APIView):
 class UploadFileView(viewsets.ModelViewSet):
     parser_classes = (MultiPartParser, FormParser)
     queryset = DataUpload.objects.all()
-    serializer_class = FileSerializer
     def create(self, request):
         file = request.FILES['file']
         dataSet = DataSetGroup.objects.filter(dataSetGroupName=request.POST['dataSetGroupId']).first()
-        dataUpload = DataUpload.objects.create(
-            dataSetgroupId=dataSet.dataSetGroupId,
-            fileName=file.name,
-            provinceName=request.POST['provinceName'],
-            dataName=request.POST['dataName'],
-            description=request.POST['description']
-            )
-        # global file_Res 
+        try:
+            dataUpload = DataUpload.objects.create(
+                dataSetgroupId=dataSet.dataSetGroupId,
+                fileName=file.name,
+                provinceName=request.POST['provinceName'],
+                dataName=request.POST['dataName'],
+                description=request.POST['description'],
+                agencyName=request.POST['agencyName']
+                )
+        except IntegrityError:
+            return Response(data={"statusCode": 4001, 'errorMsg' : "duplicate filename or dataname"},status=status.HTTP_400_BAD_REQUEST)
         File.objects.create( dataUpload=dataUpload ,file=file, fileName=file.name)
-        # file_Res = file
+        
         fileContent = pd.read_excel(file)
         return Response(data={"statusCode": 0, "data": fileContent.columns.ravel(),"dataId":dataUpload.dataId}, status=status.HTTP_200_OK)
-
-
-class ReadFileView(APIView):
-    def post(self, request):
-        fileName = request.data['fileName']
-        file = pd.read_excel("./media/"+fileName)
-        return Response(data={"statusCode": 0, "data": file.columns.ravel()}, status=status.HTTP_200_OK)
-
-
-
-class UploadNewFileView(APIView):
-    parser_classes = (MultiPartParser, FormParser)
-    def post(self, request):
-        files = request.FILES.getlist('files', None)
-        File.objects.create( file=files, fileName=request.data['fileName'])
-        return Response(data={"statusCode":0},status=status.HTTP_201_CREATED)
 
 
 
@@ -141,7 +114,6 @@ class MapMetaDataView(APIView):
                 fieldName=field['fieldName']
             )
         return Response(data={"statusCode": 0}, status=status.HTTP_200_OK)
-
 
 
 
@@ -220,3 +192,15 @@ def dropdownList(request):
         return JsonResponse({"statusCode":0,"province":listprovicne, "dataSetGroup":listdataSetGroup, "metadata":listmetadata},safe=False)
 
 
+class ListAgencyView(APIView):
+    def get(self,request):
+        if request.method == "GET":
+            agencyName = User.objects.all().values('agencyName')
+            return Response(data={"statusCode":0,"data":list(agencyName)})
+
+
+class ListDataAgencyView(APIView):
+    def post(self,request):
+        agencyName = request.data['agencyName']
+        resultdata = DataUpload.objects.filter(agencyName=agencyName).values()
+        return Response(data={"statusCode":0,"data":list(resultdata)})
