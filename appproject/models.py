@@ -11,10 +11,6 @@ class User(AbstractUser):
     agencyName = models.CharField(max_length=255 ,null=True)
     userNameAgency = models.CharField(max_length=255 ,null=True)
     
-    firstnameUserRequest = models.CharField(max_length=255 ,null=True)
-    lastnameUserRequest = models.CharField(max_length=255 ,null=True)
-    agencyNameRequest = models.CharField(max_length=255 ,null=True)
-
     username = None
     isAgency = models.BooleanField(default=True)
 
@@ -24,11 +20,12 @@ class User(AbstractUser):
 
 class DataUpload(models.Model):
     dataId = models.AutoField(primary_key=True)
-    dataName = models.CharField(max_length=255)
+    agencyName = models.CharField(max_length=255,null=False)
+    dataName = models.CharField(max_length=255,unique=True)
     description = models.CharField(max_length=255)
     dataSetgroupId = models.IntegerField()
     provinceName = models.CharField(max_length=150)
-    fileName = models.CharField(max_length=255)
+    fileName = models.CharField(max_length=255,unique=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now_add=True)
 
