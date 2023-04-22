@@ -206,6 +206,6 @@ class ListDataAgencyView(APIView):
         for data in resultdata :
             dataUpByAgName = DataUpload.objects.filter(agencyName=data['agencyName']).values()
             datasort = list(dataUpByAgName.order_by('-updated_at'))
-            respData.append({"countdata": len(list(dataUpByAgName)), data['agencyName']:datasort})
+            respData.append({"countdata": len(list(dataUpByAgName)), "agency":datasort})
 
         return Response(data={"statusCode":0, "data":respData})
