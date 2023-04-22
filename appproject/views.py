@@ -203,4 +203,5 @@ class ListDataAgencyView(APIView):
     def post(self,request):
         agencyName = request.data['agencyName']
         resultdata = DataUpload.objects.filter(agencyName=agencyName).values()
-        return Response(data={"statusCode":0,"data":list(resultdata)})
+        datasort = list(resultdata.order_by('-updated_at'))
+        return Response(data={"statusCode":0,"countdata":len(list(resultdata)),"lastedUpdated":datasort[0]['updated_at'],"data":list(resultdata)})
