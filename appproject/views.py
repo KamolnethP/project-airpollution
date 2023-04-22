@@ -204,6 +204,9 @@ class ListDataAgencyView(APIView):
                 print(email)
                 dataAgency['email'] = email.email
                 dataAgs.append(dataAgency)
-            respData.append({"countdata": len(list(dataUpByAgName)), "agency":dataAgs})
+            respData.append({"countdata": len(list(dataUpByAgName)),
+                                "time" : dataAgs[0]['updated_at'], 
+                                "agencyName": data['agencyName'],
+                                "agencyList":dataAgs})
 
         return Response(data={"statusCode":0, "data":respData})
