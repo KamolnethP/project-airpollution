@@ -21,6 +21,7 @@ class User(AbstractUser):
 class DataUpload(models.Model):
     dataId = models.AutoField(primary_key=True)
     agencyName = models.CharField(max_length=255,null=False)
+    userId = models.IntegerField(null=False)
     dataName = models.CharField(max_length=255,unique=True)
     description = models.CharField(max_length=255)
     dataSetgroupId = models.IntegerField()

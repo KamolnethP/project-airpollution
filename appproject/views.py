@@ -15,7 +15,6 @@ from django.db.models import Q
 from django.db import IntegrityError
 from .serializers import AppProjectSerializer,FileSerializer
 
-
 # Create your views here.
 
 class RegisterUserView(APIView):
@@ -70,6 +69,7 @@ class LoginUserView(APIView):
         }
         return response
 
+
 class LogoutView(APIView):
     def post(self, request):
         response = Response()
@@ -94,7 +94,8 @@ class UploadFileView(viewsets.ModelViewSet):
                 provinceName=request.POST['provinceName'],
                 dataName=request.POST['dataName'],
                 description=request.POST['description'],
-                agencyName=request.POST['agencyName']
+                agencyName=request.POST['agencyName'],
+                userId=request.POST['userId']
                 )
         except IntegrityError:
             return Response(data={"statusCode": 4001, 'errorMsg' : "duplicate filename or dataname"},status=status.HTTP_400_BAD_REQUEST)
@@ -102,7 +103,6 @@ class UploadFileView(viewsets.ModelViewSet):
         
         fileContent = pd.read_excel(file)
         return Response(data={"statusCode": 0, "data": fileContent.columns.ravel(),"dataId":dataUpload.dataId}, status=status.HTTP_200_OK)
-
 
 
 class MapMetaDataView(APIView):
@@ -114,7 +114,6 @@ class MapMetaDataView(APIView):
                 fieldName=field['fieldName']
             )
         return Response(data={"statusCode": 0}, status=status.HTTP_200_OK)
-
 
 
 class SearchDataView(APIView):
@@ -192,20 +191,19 @@ def dropdownList(request):
         return JsonResponse({"statusCode":0,"province":listprovicne, "dataSetGroup":listdataSetGroup, "metadata":listmetadata},safe=False)
 
 
-class ListAgencyView(APIView):
-    def get(self,request):
-        if request.method == "GET":
-            agencyName = User.objects.all().values('agencyName')
-            return Response(data={"statusCode":0,"data":list(agencyName)})
-
-
 class ListDataAgencyView(APIView):
     def post(self,request):
         resultdata = DataUpload.objects.values('agencyName').distinct()
         respData = []
         for data in resultdata :
-            dataUpByAgName = DataUpload.objects.filter(agencyName=data).values()
+            dataUpByAgName = DataUpload.objects.filter(agencyName=data['agencyName']).values()
             datasort = list(dataUpByAgName.order_by('-updated_at'))
-            respData.append({"countdata": len(list(dataUpByAgName)),data:datasort})
-        
+            dataAgs = []
+            for dataAgency in datasort:
+                email = User.objects.filter(userId=dataAgency['userId']).first()
+                print(email)
+                dataAgency['email'] = email.email
+                dataAgs.append(dataAgency)
+            respData.append({"countdata": len(list(dataUpByAgName)), "agency":dataAgs})
+
         return Response(data={"statusCode":0, "data":respData})
