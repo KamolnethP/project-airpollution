@@ -7,7 +7,6 @@ from .views import (RegisterUserView,
                     SearchDataView,
                     downloadFile,
                     dropdownList,
-                    ListAgencyView,
                     ListDataAgencyView)
 
 urlpatterns =[path('registerUserView', RegisterUserView.as_view()),
@@ -18,6 +17,5 @@ urlpatterns =[path('registerUserView', RegisterUserView.as_view()),
               path('searchDataView', SearchDataView.as_view()),
               path('downloadFile',downloadFile),
               path('dropdownList',dropdownList),
-              path('listAgencyView', ListAgencyView.as_view()),
               path('listDataAgencyView', ListDataAgencyView.as_view())
               ]
