@@ -20,13 +20,17 @@ from .serializers import AppProjectSerializer,FileSerializer
 class RegisterUserView(APIView):
     def post(self, request):
         serializer = AppProjectSerializer(data=request.data)
-        isValid = serializer.is_valid(raise_exception=True)
-        if !isValid {
-            errMsg = ""
+        isValid = serializer.is_valid()
+        if not isValid :
+            err = ""
+            isFirst = True
             for key in serializer.errors :
-                errMsg = errMsg + serializer.errors[key] + ","
-            return Response(data={"statusCode":1,"massage":errMsg} )
-        } 
+                if isFirst :
+                    err = err + serializer.errors[key][0]
+                    isFirst = False
+                else :
+                    err = "," + err + serializer.errors[key][0]
+            return Response(data={"statusCode":1,"massage":err} )
         serializer.save()
         return Response(data={"statusCode":0,"data":{"result" : serializer.data}} )
 
@@ -39,18 +43,10 @@ class LoginUserView(APIView):
         user = User.objects.filter(email=email).first()
 
         if user is None:
-            data = {
-                'statusCode' : 1000,
-                'errorMsg' : 'USER_NOT_FOUND'
-            }
-            return JsonResponse(data, safe=False, status=403)
+            return Response(data={"statusCode": 1, 'massage' : "Email หรือ Password ไม่ถูกต้องนะ"},status=status.HTTP_200_OK)
 
         if not user.check_password(password):
-            data = {
-                'statusCode' : 1000,
-                'errorMsg' : 'PASSWORD_INVALID'
-            }
-            return JsonResponse(data, safe=False, status=403)
+            return Response(data={"statusCode": 1, 'massage' : "Email หรือ Password ไม่ถูกต้องนะ"},status=status.HTTP_200_OK)
             
 
         payload = {
@@ -104,7 +100,7 @@ class UploadFileView(viewsets.ModelViewSet):
                 userId=request.POST['userId']
                 )
         except IntegrityError:
-            return Response(data={"statusCode": 4001, 'errorMsg' : "duplicate filename or dataname"},status=status.HTTP_400_BAD_REQUEST)
+            return Response(data={"statusCode": 1, 'massage' : "duplicate filename or dataname"},status=status.HTTP_200_OK)
         File.objects.create( dataUpload=dataUpload ,file=file, fileName=file.name)
         
         fileContent = pd.read_excel(file)
