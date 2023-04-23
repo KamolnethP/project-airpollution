@@ -43,18 +43,10 @@ class LoginUserView(APIView):
         user = User.objects.filter(email=email).first()
 
         if user is None:
-            data = {
-                'statusCode' : 1000,
-                'errorMsg' : 'USER_NOT_FOUND'
-            }
-            return JsonResponse(data, safe=False, status=403)
+            return Response(data={"statusCode": 1, 'massage' : "Email หรือ Password ไม่ถูกต้องนะ"},status=status.HTTP_200_OK)
 
         if not user.check_password(password):
-            data = {
-                'statusCode' : 1000,
-                'errorMsg' : 'PASSWORD_INVALID'
-            }
-            return JsonResponse(data, safe=False, status=403)
+            return Response(data={"statusCode": 1, 'massage' : "Email หรือ Password ไม่ถูกต้องนะ"},status=status.HTTP_200_OK)
             
 
         payload = {
@@ -108,7 +100,7 @@ class UploadFileView(viewsets.ModelViewSet):
                 userId=request.POST['userId']
                 )
         except IntegrityError:
-            return Response(data={"statusCode": 4001, 'errorMsg' : "duplicate filename or dataname"},status=status.HTTP_400_BAD_REQUEST)
+            return Response(data={"statusCode": 1, 'massage' : "duplicate filename or dataname"},status=status.HTTP_200_OK)
         File.objects.create( dataUpload=dataUpload ,file=file, fileName=file.name)
         
         fileContent = pd.read_excel(file)
