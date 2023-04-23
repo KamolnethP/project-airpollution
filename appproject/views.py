@@ -20,13 +20,17 @@ from .serializers import AppProjectSerializer,FileSerializer
 class RegisterUserView(APIView):
     def post(self, request):
         serializer = AppProjectSerializer(data=request.data)
-        isValid = serializer.is_valid(raise_exception=True)
-        if !isValid {
-            errMsg = ""
+        isValid = serializer.is_valid()
+        if not isValid :
+            err = ""
+            isFirst = True
             for key in serializer.errors :
-                errMsg = errMsg + serializer.errors[key] + ","
-            return Response(data={"statusCode":1,"massage":errMsg} )
-        } 
+                if isFirst :
+                    err = err + serializer.errors[key][0]
+                    isFirst = False
+                else :
+                    err = "," + err + serializer.errors[key][0]
+            return Response(data={"statusCode":1,"massage":err} )
         serializer.save()
         return Response(data={"statusCode":0,"data":{"result" : serializer.data}} )
 
