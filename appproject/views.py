@@ -30,7 +30,7 @@ class RegisterUserView(APIView):
                     isFirst = False
                 else :
                     err = "," + err + serializer.errors[key][0]
-            return Response(data={"statusCode":1,"massage":err} )
+            return Response(data={"statusCode":1,"message":err} )
         serializer.save()
         return Response(data={"statusCode":0,"data":{"result" : serializer.data}} )
 
@@ -43,10 +43,10 @@ class LoginUserView(APIView):
         user = User.objects.filter(email=email).first()
 
         if user is None:
-            return Response(data={"statusCode": 1, 'massage' : "Email หรือ Password ไม่ถูกต้องนะ"},status=status.HTTP_200_OK)
+            return Response(data={"statusCode": 1, 'message' : "Email หรือ Password ไม่ถูกต้องนะ"},status=status.HTTP_200_OK)
 
         if not user.check_password(password):
-            return Response(data={"statusCode": 1, 'massage' : "Email หรือ Password ไม่ถูกต้องนะ"},status=status.HTTP_200_OK)
+            return Response(data={"statusCode": 1, 'message' : "Email หรือ Password ไม่ถูกต้องนะ"},status=status.HTTP_200_OK)
             
 
         payload = {
@@ -100,7 +100,7 @@ class UploadFileView(viewsets.ModelViewSet):
                 userId=request.POST['userId']
                 )
         except IntegrityError:
-            return Response(data={"statusCode": 1, 'massage' : "duplicate filename or dataname"},status=status.HTTP_200_OK)
+            return Response(data={"statusCode": 1, 'message' : "duplicate filename or dataname"},status=status.HTTP_200_OK)
         File.objects.create( dataUpload=dataUpload ,file=file, fileName=file.name)
         
         fileContent = pd.read_excel(file)
