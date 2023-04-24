@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
+from django.utils import timezone
 
 
 
@@ -27,8 +28,8 @@ class DataUpload(models.Model):
     dataSetgroupId = models.IntegerField()
     provinceName = models.CharField(max_length=150)
     fileName = models.CharField(max_length=255,unique=True)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now_add=True)
+    created_at = models.DateTimeField(default=timezone.now)
+    updated_at = models.DateTimeField(default=timezone.now)
 
     def __str__(self):
         return self.__all__
