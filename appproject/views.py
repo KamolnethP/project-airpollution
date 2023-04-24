@@ -123,7 +123,7 @@ class SearchDataView(APIView):
         resultData = DataUpload.objects.none()
         dataSetGroup = request.data['dataSetGroup']
         if dataSetGroup:
-            dataSetGroupitem = DataSetGroup.objects.filter(dataSetGroupName=dataSetGroup).first()
+            dataSetGroupitem = DataSetGroup.objects.filter(dataSetGroupId=dataSetGroup).first()
             resultData = DataUpload.objects.filter(dataSetgroupId=dataSetGroupitem.dataSetGroupId).values()
 
         keySearch = request.data['keySearch']
