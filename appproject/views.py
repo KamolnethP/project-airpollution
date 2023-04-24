@@ -123,7 +123,7 @@ class SearchDataView(APIView):
         resultData = DataUpload.objects.none()
         dataSetGroup = request.data['dataSetGroup']
         if dataSetGroup:
-            dataSetGroupitem = DataSetGroup.objects.filter(dataSetGroupId=dataSetGroup).first()
+            dataSetGroupitem = DataSetGroup.objects.filter(dataSetGroupName=dataSetGroup).first()
             resultData = DataUpload.objects.filter(dataSetgroupId=dataSetGroupitem.dataSetGroupId).values()
 
         keySearch = request.data['keySearch']
@@ -205,6 +205,8 @@ class ListDataAgencyView(APIView):
                 email = User.objects.filter(userId=dataAgency['userId']).first()
                 print(email)
                 dataAgency['email'] = email.email
+                dataSetGroupName =  DataSetGroup.objects.filter(dataSetGroupId=dataAgency['dataSetgroupId']).first()
+                dataAgency['dataSetGroupName'] = dataSetGroupName.dataSetGroupName
                 dataAgs.append(dataAgency)
             respData.append({"countdata": len(list(dataUpByAgName)),
                                 "time" : dataAgs[0]['updated_at'], 
