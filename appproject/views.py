@@ -152,7 +152,7 @@ class SearchDataView(APIView):
                         for result in resultMapField:
                             listMapField.append({"fieldName": result['fieldName'], "metaDataName": result['metaDataName']})
                     data['mapFieldList'] = listMapField
-                dataSetGroupResponse.append({"dataSetGroupId": id['dataSetGroupId'],"dataSetGroupName": id['dataSetGroupName'],"countdata":len(list(resultdataSetgroup)) , "data": list(resultdataSetgroup)})
+            dataSetGroupResponse.append({"dataSetGroupId": id['dataSetGroupId'],"dataSetGroupName": id['dataSetGroupName'],"countdata":len(list(resultdataSetgroup)) , "data": list(resultdataSetgroup)})
 
 
         print(resultData)
